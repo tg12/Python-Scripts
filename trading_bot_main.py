@@ -21,7 +21,7 @@ try:
 
  from coinbase.wallet.client import Client
 
- client = Client('yUpZDztaxDUnQtWB','ESjT9WB5rh46NMXsuUOspL8WF3nAkuB4', api_version='2017-11-20')
+ client = Client(<<REMOVED>>,<<REMOVED>>, api_version='2017-11-20')
  accounts = client.get_accounts()
  currency_code = 'GBP'  # can also use EUR, CAD, etc.
 

@@ -1,7 +1,7 @@
-#A bot that tweets the most popular hashtags with the latest Reddit post titles.
-#Want to show your support? Donate via PayPal or Bitcoin
-#1BHD7LQS9UkZvDXtoNjKrFMogJjPxz6aMj
-#Have comments or questions? https://github.com/tg12
+# A bot that tweets the most popular hashtags with the latest Reddit post titles.
+# Want to show your support? Donate via PayPal or Bitcoin
+# 1BHD7LQS9UkZvDXtoNjKrFMogJjPxz6aMj
+# Have comments or questions? https://github.com/tg12
 
 
 import csv
@@ -30,7 +30,7 @@ def load_trends():
 
     trends = USER.trends_place(2450022)
     temp_list = list()
-    
+
     for trend in trends[0]["trends"]:
 
         if trend["tweet_volume"] is not None and " " not in trend["name"]:
@@ -38,7 +38,7 @@ def load_trends():
 
     temp_list.sort(key=lambda tup: tup[1], reverse=True)
 
-    return [item[0] for item in temp_list] 
+    return [item[0] for item in temp_list]
 
 
 def load_csv():
@@ -55,7 +55,7 @@ def save_csv(post_id):
 
 
 def load_latest_posts():
-    """Loads the latest posts from the given subreddit.""" 
+    """Loads the latest posts from the given subreddit."""
 
     url = "https://www.reddit.com/r/{0}/new/.json".format(SUBREDDIT_NAME)
     headers = {"User-Agent": "SimpleBot 0.1"}
@@ -70,7 +70,8 @@ def load_latest_posts():
             post_title = item["data"]["title"]
             post_url = "https://redd.it/" + item["data"]["id"]
 
-            message = "{0} {1} {2}".format(post_title, " ".join(TRENDS_LIST), post_url)
+            message = "{0} {1} {2}".format(
+                post_title, " ".join(TRENDS_LIST), post_url)
 
             if len(message) <= 140:
                 tweet_message(message, post_id)

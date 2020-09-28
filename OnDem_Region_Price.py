@@ -80,7 +80,9 @@ def nested_dict_print(d):
             # if str(k) == "description": #debugging
                 # print("{0} : {1}".format(k, v)) #debugging
             if str(k) == "USD":
-                global ondem_price  # hack, you figure out why! the price data is buried that far in the dictionary(s) this is a reasonable hack!
+                # hack, you figure out why! the price data is buried that far
+                # in the dictionary(s) this is a reasonable hack!
+                global ondem_price
                 ondem_price = float(v)
 
 

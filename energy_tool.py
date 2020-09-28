@@ -18,6 +18,7 @@ import pprint
 import xmltodict
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 # from scipy.signal import find_peaks #reserved for future use
 # Scikit's LinearRegression model
@@ -31,9 +32,9 @@ init()
 # Back: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET.
 # Style: DIM, NORMAL, BRIGHT, RESET_ALL
 # Now regular ANSI codes should work, even in Windows
-CLEAR_SCREEN = '\033[2J'
-RED = '\033[31m'   # mode 31 = red forground
-RESET = '\033[0m'  # mode 0  = reset
+CLEAR_SCREEN = "\033[2J"
+RED = "\033[31m"  # mode 31 = red forground
+RESET = "\033[0m"  # mode 0  = reset
 
 
 API_VERSION = "v1"
@@ -46,33 +47,34 @@ def ceil_dt(dt, delta):
 
 
 half_hour = [
-    '%s:%s%s' %
-    (h,
-     m,
-     ap) for ap in (
-        'am',
-        'pm') for h in (
-            [12] +
-            list(
-                range(
-                    1,
-                    12))) for m in (
-                        '00',
-        '30')]
+    "%s:%s%s" % (h, m, ap)
+    for ap in ("am", "pm")
+    for h in ([12] + list(range(1, 12)))
+    for m in ("00", "30")
+]
 today = datetime.now()
 
 for i in range(0, DAYS_TO_LOOK_BACK):
 
     today += timedelta(days=-1)
-    req_str = "https://api.bmreports.com/BMRS/SYSDEM/" + str(API_VERSION) + "?APIKey=" + str(KEY) + "&FromDate=" + str(
-        str(today.strftime("%Y-%m-%d"))) + "&ToDate=" + str(today.strftime("%Y-%m-%d")) + "&ServiceType=xml"
+    req_str = (
+        "https://api.bmreports.com/BMRS/SYSDEM/"
+        + str(API_VERSION)
+        + "?APIKey="
+        + str(KEY)
+        + "&FromDate="
+        + str(str(today.strftime("%Y-%m-%d")))
+        + "&ToDate="
+        + str(today.strftime("%Y-%m-%d"))
+        + "&ServiceType=xml"
+    )
     # verify=False is needed for some crappy interception proxys. Are you behind a corporate firewall perhaps?. Should be
     # fine without it on Home connections
     data = requests.get(
         req_str,
-        headers={
-            "Content-Type": "application/xml; charset=UTF-8"},
-        verify=False)
+        headers={"Content-Type": "application/xml; charset=UTF-8"},
+        verify=False,
+    )
     json_data = json.dumps(xmltodict.parse(data.text))
     system_demand = json.loads(json_data)["response"]
     pp = pprint.PrettyPrinter(indent=2)
@@ -85,8 +87,7 @@ for i in range(0, DAYS_TO_LOOK_BACK):
         # print (half_hour[int(each["settlementPeriod"]) -1 ]) #-1 because you
         # know, it's a list!
         dt_tm_string = half_hour[int(each["settlementPeriod"]) - 1]
-        dt_tm_string = datetime.strptime(
-            dt_tm_string, "%I:%M%p").strftime("%I:%M%p")
+        dt_tm_string = datetime.strptime(dt_tm_string, "%I:%M%p").strftime("%I:%M%p")
         x.append(dt_tm_string)
         # print (float(each["demand"]))
         y.append(float(each["demand"]))
@@ -106,10 +107,10 @@ for i in range(0, DAYS_TO_LOOK_BACK):
     x = [k for k in averages]
     y = [v for v in averages.values()]
 
-    plt.plot(x, y, '--', label=str(today.strftime("%A %Y-%m-%d")))
+    plt.plot(x, y, "--", label=str(today.strftime("%A %Y-%m-%d")))
 
 plt.xticks(rotation=90, fontsize=12)
-plt.legend(loc='upper left')
+plt.legend(loc="upper left")
 plt.grid()
 plt.show()
 
@@ -121,15 +122,24 @@ if __name__ == "__main__":
         # Grab today's data
         ####################
         today = datetime.now()
-        req_str = "https://api.bmreports.com/BMRS/ROLSYSDEM/" + str(API_VERSION) + "?APIKey=" + str(KEY) + "&FromDateTime=" + str(
-            str(today.strftime("%Y-%m-%d")) + " 00:01:01") + "&ToDateTime=" + str(today.strftime("%Y-%m-%d %H:%M:%S")) + "&ServiceType=xml"
+        req_str = (
+            "https://api.bmreports.com/BMRS/ROLSYSDEM/"
+            + str(API_VERSION)
+            + "?APIKey="
+            + str(KEY)
+            + "&FromDateTime="
+            + str(str(today.strftime("%Y-%m-%d")) + " 00:01:01")
+            + "&ToDateTime="
+            + str(today.strftime("%Y-%m-%d %H:%M:%S"))
+            + "&ServiceType=xml"
+        )
         # verify=False is needed for some shitty interception proxys. Should be
         # fine without it on Home connections
         data = requests.get(
             req_str,
-            headers={
-                "Content-Type": "application/xml; charset=UTF-8"},
-            verify=False)
+            headers={"Content-Type": "application/xml; charset=UTF-8"},
+            verify=False,
+        )
         json_data = json.dumps(xmltodict.parse(data.text))
         system_demand = json.loads(json_data)["response"]
 
@@ -140,8 +150,13 @@ if __name__ == "__main__":
                 datetime.strftime(
                     ceil_dt(
                         datetime.strptime(
-                            each["publishingPeriodCommencingTime"], "%H:%M:%S"), timedelta(
-                            minutes=15)), "%H:%M"))
+                            each["publishingPeriodCommencingTime"], "%H:%M:%S"
+                        ),
+                        timedelta(minutes=15),
+                    ),
+                    "%H:%M",
+                )
+            )
             gen_graph.append(float(each["fuelTypeGeneration"]))
 
         print(time_graph[-1])
@@ -163,15 +178,24 @@ if __name__ == "__main__":
             # if you do days=-1 you will get different days of the week counting
             # backwards
 
-            req_str = "https://api.bmreports.com/BMRS/ROLSYSDEM/" + str(API_VERSION) + "?APIKey=" + str(KEY) + "&FromDateTime=" + str(
-                str(today.strftime("%Y-%m-%d")) + " 00:01:01") + "&ToDateTime=" + str(today.strftime("%Y-%m-%d %H:%M:%S")) + "&ServiceType=xml"
+            req_str = (
+                "https://api.bmreports.com/BMRS/ROLSYSDEM/"
+                + str(API_VERSION)
+                + "?APIKey="
+                + str(KEY)
+                + "&FromDateTime="
+                + str(str(today.strftime("%Y-%m-%d")) + " 00:01:01")
+                + "&ToDateTime="
+                + str(today.strftime("%Y-%m-%d %H:%M:%S"))
+                + "&ServiceType=xml"
+            )
             # verify=False is needed for some shitty interception proxys.
             # Should be fine without it on Home connections
             data = requests.get(
                 req_str,
-                headers={
-                    "Content-Type": "application/xml; charset=UTF-8"},
-                verify=False)
+                headers={"Content-Type": "application/xml; charset=UTF-8"},
+                verify=False,
+            )
             json_data = json.dumps(xmltodict.parse(data.text))
             # print(pp.pprint(json.loads(json_data)["response"]))
             system_demand = json.loads(json_data)["response"]
@@ -185,8 +209,13 @@ if __name__ == "__main__":
                     datetime.strftime(
                         ceil_dt(
                             datetime.strptime(
-                                each["publishingPeriodCommencingTime"], "%H:%M:%S"), timedelta(
-                                minutes=15)), "%H:%M"))
+                                each["publishingPeriodCommencingTime"], "%H:%M:%S"
+                            ),
+                            timedelta(minutes=15),
+                        ),
+                        "%H:%M",
+                    )
+                )
                 gen_graph.append(float(each["fuelTypeGeneration"]))
                 ys.append(float(each["fuelTypeGeneration"]))
                 # print("#########") #debugging
@@ -195,8 +224,12 @@ if __name__ == "__main__":
             # plt.plot(time_graph, gen_graph, '--',
             # label=str(today.strftime("%A %Y-%m-%d"))) #debugging
             z_scores.extend(stats.zscore(gen_graph, ddof=1))
-            plt.plot(time_graph, stats.zscore(gen_graph, ddof=1), '--',
-                     label=str(today.strftime("%A %Y-%m-%d")))  # debugging
+            plt.plot(
+                time_graph,
+                stats.zscore(gen_graph, ddof=1),
+                "--",
+                label=str(today.strftime("%A %Y-%m-%d")),
+            )  # debugging
             # peaks, _ = find_peaks(gen_graph)
             # peaks = [gen_graph[b] for b in peaks]
             # print(peaks)
@@ -219,11 +252,11 @@ if __name__ == "__main__":
         # # plt.axhline(y=min(ys), color='r', linestyle='--')
         # # plt.axhline(y=max(ys), color='b', linestyle='--')
         ##############################################################
-        plt.axhline(y=min(z_scores), color='r', linestyle='--')
-        plt.axhline(y=max(z_scores), color='b', linestyle='--')
-        plt.axhline(y=np.median(z_scores), color='b', linestyle='--')
+        plt.axhline(y=min(z_scores), color="r", linestyle="--")
+        plt.axhline(y=max(z_scores), color="b", linestyle="--")
+        plt.axhline(y=np.median(z_scores), color="b", linestyle="--")
         plt.xticks(rotation=90, fontsize=12)
-        plt.legend(loc='upper left')
+        plt.legend(loc="upper left")
         plt.grid()
         plt.show()
         today = datetime.now()
@@ -232,17 +265,19 @@ if __name__ == "__main__":
         # print ("[+]debug, mean of z_scores..." + str(np.median(z_scores)))
         if float(current_z_score) > float(np.median(z_scores)):
             print(
-                Fore.RED +
-                "[+]debug, energy use high for an average " +
-                today.strftime("%A") +
-                ",Last Checked @ " +
-                today.strftime("%H:%M:%S"))
+                Fore.RED
+                + "[+]debug, energy use high for an average "
+                + today.strftime("%A")
+                + ",Last Checked @ "
+                + today.strftime("%H:%M:%S")
+            )
         else:
             print(
-                Fore.GREEN +
-                "[+]debug, energy use low/OK for a " +
-                today.strftime("%A") +
-                ",Last Checked @ " +
-                today.strftime("%H:%M:%S"))
+                Fore.GREEN
+                + "[+]debug, energy use low/OK for a "
+                + today.strftime("%A")
+                + ",Last Checked @ "
+                + today.strftime("%H:%M:%S")
+            )
 
         time.sleep(60)

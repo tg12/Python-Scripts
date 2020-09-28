@@ -8,7 +8,7 @@ class Temper2:
 
     vendor_id = 0x413D
     product_id = 0x2107
-    name_query = [0x01, 0x86, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00]
+    name_query = [0x01, 0x86, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00]
     temp_query = [0x01, 0x80, 0x33, 0x01, 0x00, 0x00, 0x00, 0x00]
     max_open_tries = 10
     read_timeout = 500
@@ -23,7 +23,7 @@ class Temper2:
                 self.h.open(self.vendor_id, self.product_id)
             except BaseException:
                 if tries >= self.max_open_tries:
-                    raise IOError('could not open device')
+                    raise IOError("could not open device")
                 time.sleep(0.1)
                 continue
             is_open = True
@@ -66,14 +66,14 @@ class Temper2:
 
     @staticmethod
     def _read_string(b):
-        return ''.join([chr(r) for r in b])
+        return "".join([chr(r) for r in b])
 
     @staticmethod
     def _read_temp(b):
         return ((b[2] << 8) + b[3]) / 100
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with Temper2() as t:
         name = t.get_name()
         print(name)

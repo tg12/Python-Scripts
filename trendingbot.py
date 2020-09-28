@@ -70,8 +70,7 @@ def load_latest_posts():
             post_title = item["data"]["title"]
             post_url = "https://redd.it/" + item["data"]["id"]
 
-            message = "{0} {1} {2}".format(
-                post_title, " ".join(TRENDS_LIST), post_url)
+            message = "{0} {1} {2}".format(post_title, " ".join(TRENDS_LIST), post_url)
 
             if len(message) <= 140:
                 tweet_message(message, post_id)

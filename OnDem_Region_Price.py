@@ -22,11 +22,12 @@ import numpy as np
 import pprint
 import json
 import matplotlib.pyplot as plt
+
 plt.rcdefaults()
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 pp = pprint.PrettyPrinter(indent=4)
 
-ssm = boto3.client('ssm', verify=False)
+ssm = boto3.client("ssm", verify=False)
 
 
 class Regions:
@@ -34,41 +35,34 @@ class Regions:
     def get_regions(cls):
         short_codes = cls._get_region_short_codes()
 
-        regions = [{
-            'name': cls._get_region_long_name(sc),
-            'code': sc
-        } for sc in short_codes]
+        regions = [
+            {"name": cls._get_region_long_name(sc), "code": sc} for sc in short_codes
+        ]
 
-        regions_sorted = sorted(
-            regions,
-            key=lambda k: k['name']
-        )
+        regions_sorted = sorted(regions, key=lambda k: k["name"])
 
         return regions_sorted
 
     @classmethod
     def _get_region_long_name(cls, short_code):
         param_name = (
-            '/aws/service/global-infrastructure/regions/'
-            f'{short_code}/longName'
+            "/aws/service/global-infrastructure/regions/" f"{short_code}/longName"
         )
-        response = ssm.get_parameters(
-            Names=[param_name]
-        )
-        return response['Parameters'][0]['Value']
+        response = ssm.get_parameters(Names=[param_name])
+        return response["Parameters"][0]["Value"]
 
     @classmethod
     def _get_region_short_codes(cls):
         output = set()
-        for page in ssm.get_paginator('get_parameters_by_path').paginate(
-            Path='/aws/service/global-infrastructure/regions'
+        for page in ssm.get_paginator("get_parameters_by_path").paginate(
+            Path="/aws/service/global-infrastructure/regions"
         ):
-            output.update(p['Value'] for p in page['Parameters'])
+            output.update(p["Value"] for p in page["Parameters"])
 
         return output
 
 
-pricing_client = boto3.client('pricing', region_name='us-east-1', verify=False)
+pricing_client = boto3.client("pricing", region_name="us-east-1", verify=False)
 ondem_price = 0
 
 
@@ -78,7 +72,7 @@ def nested_dict_print(d):
             nested_dict_print(v)
         else:
             # if str(k) == "description": #debugging
-                # print("{0} : {1}".format(k, v)) #debugging
+            # print("{0} : {1}".format(k, v)) #debugging
             if str(k) == "USD":
                 # hack, you figure out why! the price data is buried that far
                 # in the dictionary(s) this is a reasonable hack!
@@ -87,46 +81,20 @@ def nested_dict_print(d):
 
 
 def get_products(region_code, region, inst_type):
-    paginator = pricing_client.get_paginator('get_products')
+    paginator = pricing_client.get_paginator("get_products")
     tmp_lst = []
 
     response_iterator = paginator.paginate(
         ServiceCode="AmazonEC2",
         Filters=[
-            {
-                'Type': 'TERM_MATCH',
-                'Field': 'location',
-                'Value': region
-            },
-            {
-                'Type': 'TERM_MATCH',
-                'Field': 'instanceType',
-                'Value': inst_type
-            },
-            {
-                'Type': 'TERM_MATCH',
-                'Field': 'capacitystatus',
-                'Value': 'Used'
-            },
-            {
-                'Type': 'TERM_MATCH',
-                'Field': 'tenancy',
-                'Value': 'Shared'
-            },
-            {
-                'Type': 'TERM_MATCH',
-                'Field': 'preInstalledSw',
-                'Value': 'NA'
-            },
-            {
-                'Type': 'TERM_MATCH',
-                'Field': 'operatingSystem',
-                'Value': 'Windows'
-            }
+            {"Type": "TERM_MATCH", "Field": "location", "Value": region},
+            {"Type": "TERM_MATCH", "Field": "instanceType", "Value": inst_type},
+            {"Type": "TERM_MATCH", "Field": "capacitystatus", "Value": "Used"},
+            {"Type": "TERM_MATCH", "Field": "tenancy", "Value": "Shared"},
+            {"Type": "TERM_MATCH", "Field": "preInstalledSw", "Value": "NA"},
+            {"Type": "TERM_MATCH", "Field": "operatingSystem", "Value": "Windows"},
         ],
-        PaginationConfig={
-            'PageSize': 100
-        }
+        PaginationConfig={"PageSize": 100},
     )
 
     products = []
@@ -148,12 +116,12 @@ def get_products(region_code, region, inst_type):
 
 
 aws_ec2_types = []
-ec2 = boto3.resource('ec2', verify=False)
+ec2 = boto3.resource("ec2", verify=False)
 
 # Get information for all running instances
-running_instances = ec2.instances.filter(Filters=[{
-    'Name': 'instance-state-name',
-    'Values': ['running']}])
+running_instances = ec2.instances.filter(
+    Filters=[{"Name": "instance-state-name", "Values": ["running"]}]
+)
 
 for instance in running_instances:
     # print (instance.instance_type)
@@ -182,7 +150,8 @@ for type in aws_ec2_types:
         except Exception as e:
             # print("[+]debug, error..." + str(e)) #debugging
             print(
-                "[+]debug, error...check this instance type is available in this region, or connection error etc")
+                "[+]debug, error...check this instance type is available in this region, or connection error etc"
+            )
             continue
 
     print(lst_data)
@@ -195,21 +164,18 @@ for type in aws_ec2_types:
     price_data = []
 
     for i in range(len(lst_data)):
-        string_result = str(
-            lst_data[i][0] +
-            "/" +
-            lst_data[i][1])
+        string_result = str(lst_data[i][0] + "/" + lst_data[i][1])
         instance_type_data.append(string_result)
         price_data.append(float(lst_data[i][2]))
 
     y_pos = np.arange(len(instance_type_data))
-    bars = plt.bar(y_pos, price_data, align='center', alpha=0.5, width=.4)
+    bars = plt.bar(y_pos, price_data, align="center", alpha=0.5, width=0.4)
     for bar in bars:
         yval = bar.get_height()
-        plt.text(bar.get_x(), yval + .005, yval)
+        plt.text(bar.get_x(), yval + 0.005, yval)
     plt.yticks(np.arange(np.min(price_data), np.max(price_data), step=0.1))
     plt.xticks(y_pos, instance_type_data, rotation=45, fontsize=8)
     plt.grid(True)
-    plt.ylabel('Price Per Hour (On Demand)')
-    plt.title('On Demand/Instance Hour')
+    plt.ylabel("Price Per Hour (On Demand)")
+    plt.title("On Demand/Instance Hour")
     plt.show()

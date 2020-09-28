@@ -2,7 +2,6 @@
 # 1BHD7LQS9UkZvDXtoNjKrFMogJjPxz6aMj
 # Have comments or questions? https://github.com/tg12
 
-
 import sys
 import tweepy
 import random
@@ -33,5 +32,5 @@ for x in range(0, 3):
     message = "Hello, " + screen_name_to + " Thanks for the interest " + username + "!"
     print message
     USER.update_status(message)
-    print ("Tweeted: {0}".format(message))
+    print("Tweeted: {0}".format(message))
     sleep(randint(10, 100))

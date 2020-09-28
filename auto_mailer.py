@@ -20,7 +20,6 @@ me = "<<REMOVED>>"  # change to your email
 p_reader = open("<<REMOVED>>", "rb")  # edit for your password
 cipher = p_reader.read()
 
-
 while True:
     email = random.choice(lines)
     firstname = names.get_first_name()

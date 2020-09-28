@@ -31,13 +31,15 @@ ssm = boto3.client("ssm", verify=False)
 
 
 class Regions:
+
     @classmethod
     def get_regions(cls):
         short_codes = cls._get_region_short_codes()
 
-        regions = [
-            {"name": cls._get_region_long_name(sc), "code": sc} for sc in short_codes
-        ]
+        regions = [{
+            "name": cls._get_region_long_name(sc),
+            "code": sc
+        } for sc in short_codes]
 
         regions_sorted = sorted(regions, key=lambda k: k["name"])
 
@@ -45,9 +47,8 @@ class Regions:
 
     @classmethod
     def _get_region_long_name(cls, short_code):
-        param_name = (
-            "/aws/service/global-infrastructure/regions/" f"{short_code}/longName"
-        )
+        param_name = ("/aws/service/global-infrastructure/regions/"
+                      f"{short_code}/longName")
         response = ssm.get_parameters(Names=[param_name])
         return response["Parameters"][0]["Value"]
 
@@ -55,8 +56,7 @@ class Regions:
     def _get_region_short_codes(cls):
         output = set()
         for page in ssm.get_paginator("get_parameters_by_path").paginate(
-            Path="/aws/service/global-infrastructure/regions"
-        ):
+                Path="/aws/service/global-infrastructure/regions"):
             output.update(p["Value"] for p in page["Parameters"])
 
         return output
@@ -87,12 +87,36 @@ def get_products(region_code, region, inst_type):
     response_iterator = paginator.paginate(
         ServiceCode="AmazonEC2",
         Filters=[
-            {"Type": "TERM_MATCH", "Field": "location", "Value": region},
-            {"Type": "TERM_MATCH", "Field": "instanceType", "Value": inst_type},
-            {"Type": "TERM_MATCH", "Field": "capacitystatus", "Value": "Used"},
-            {"Type": "TERM_MATCH", "Field": "tenancy", "Value": "Shared"},
-            {"Type": "TERM_MATCH", "Field": "preInstalledSw", "Value": "NA"},
-            {"Type": "TERM_MATCH", "Field": "operatingSystem", "Value": "Windows"},
+            {
+                "Type": "TERM_MATCH",
+                "Field": "location",
+                "Value": region
+            },
+            {
+                "Type": "TERM_MATCH",
+                "Field": "instanceType",
+                "Value": inst_type
+            },
+            {
+                "Type": "TERM_MATCH",
+                "Field": "capacitystatus",
+                "Value": "Used"
+            },
+            {
+                "Type": "TERM_MATCH",
+                "Field": "tenancy",
+                "Value": "Shared"
+            },
+            {
+                "Type": "TERM_MATCH",
+                "Field": "preInstalledSw",
+                "Value": "NA"
+            },
+            {
+                "Type": "TERM_MATCH",
+                "Field": "operatingSystem",
+                "Value": "Windows"
+            },
         ],
         PaginationConfig={"PageSize": 100},
     )
@@ -119,9 +143,10 @@ aws_ec2_types = []
 ec2 = boto3.resource("ec2", verify=False)
 
 # Get information for all running instances
-running_instances = ec2.instances.filter(
-    Filters=[{"Name": "instance-state-name", "Values": ["running"]}]
-)
+running_instances = ec2.instances.filter(Filters=[{
+    "Name": "instance-state-name",
+    "Values": ["running"]
+}])
 
 for instance in running_instances:
     # print (instance.instance_type)

@@ -46,7 +46,10 @@ def get_cpu_util(instanceID, startTime, endTime):
         Namespace="AWS/EC2",
         MetricName="CPUUtilization",
         Dimensions=[
-            {"Name": "InstanceId", "Value": instanceID},
+            {
+                "Name": "InstanceId",
+                "Value": instanceID
+            },
         ],
         StartTime=startTime,
         EndTime=endTime,
@@ -69,9 +72,10 @@ aws_ec2_ids = []
 ec2 = boto3.resource("ec2", verify=False)
 
 # Get information for all running instances
-running_instances = ec2.instances.filter(
-    Filters=[{"Name": "instance-state-name", "Values": ["running"]}]
-)
+running_instances = ec2.instances.filter(Filters=[{
+    "Name": "instance-state-name",
+    "Values": ["running"]
+}])
 
 ec2info = defaultdict()
 for instance in running_instances:
@@ -84,8 +88,7 @@ for instance in running_instances:
 
 endTime = datetime.fromisoformat(str(datetime.now()))
 startTime = datetime.fromisoformat(
-    str(datetime.now() - timedelta(days=DAYS_BACK_PERIOD))
-)
+    str(datetime.now() - timedelta(days=DAYS_BACK_PERIOD)))
 
 # print (type(endTime)) #debugging
 # print (type(startTime)) #debugging

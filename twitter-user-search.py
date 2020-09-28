@@ -8,7 +8,6 @@
 # 1BHD7LQS9UkZvDXtoNjKrFMogJjPxz6aMj
 # Have comments or questions? https://github.com/tg12
 
-
 import random
 from twitter import *
 
@@ -26,14 +25,12 @@ execfile("config.py", config)
 # -----------------------------------------------------------------------
 # create twitter API object
 # -----------------------------------------------------------------------
-twitter = Twitter(
-    auth=OAuth(
-        config["access_key"],
-        config["access_secret"],
-        config["consumer_key"],
-        config["consumer_secret"],
-    )
-)
+twitter = Twitter(auth=OAuth(
+    config["access_key"],
+    config["access_secret"],
+    config["consumer_key"],
+    config["consumer_secret"],
+))
 
 # -----------------------------------------------------------------------
 # perform a user search
@@ -49,8 +46,7 @@ for x in range(0, 8):
     for user in results:
         # print "@%s (%s): %s" % (user["screen_name"], user["name"], user["location"])
         open("/root/LearningPython/users.txt", "a+").write(
-            str(user["name"]) + " " + "@" + user["screen_name"] + "\n"
-        )
+            str(user["name"]) + " " + "@" + user["screen_name"] + "\n")
         # new_status = "Hi" + " @" + user["screen_name"] + " How are you today?"
         # results = twitter.statuses.update(status = new_status)
         # print "updated status: %s" % new_status

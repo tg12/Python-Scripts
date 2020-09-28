@@ -4,7 +4,6 @@
 # 1BHD7LQS9UkZvDXtoNjKrFMogJjPxz6aMj
 # Have comments or questions? https://github.com/tg12
 
-
 import os
 import sys
 import getopt
@@ -15,7 +14,6 @@ import hashlib
 import random
 import requests
 import base58
-
 
 word_file = "/root/MASTER.txt"
 WORDS = open(word_file).read().splitlines()
@@ -57,17 +55,16 @@ def base58CheckEncode(version, payload):
 
 
 secp256k1curve = ecdsa.ellipticcurve.CurveFp(
-    115792089237316195423570985008687907853269984665640564039457584007908834671663, 0, 7
-)
+    115792089237316195423570985008687907853269984665640564039457584007908834671663,
+    0, 7)
 secp256k1point = ecdsa.ellipticcurve.Point(
     secp256k1curve,
     0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798,
     0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8,
     0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141,
 )
-secp256k1 = ecdsa.curves.Curve(
-    "secp256k1", secp256k1curve, secp256k1point, (1, 3, 132, 0, 10)
-)
+secp256k1 = ecdsa.curves.Curve("secp256k1", secp256k1curve, secp256k1point,
+                               (1, 3, 132, 0, 10))
 
 
 def privateKeyToWif(key_hex):
@@ -89,8 +86,8 @@ def addy(pk):
         pubnum /= 58
     address = ""
     for l in [
-        "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"[x]
-        for x in pubnumlist
+            "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"[x]
+            for x in pubnumlist
     ]:
         address = l + address
     return "1" + address
@@ -106,10 +103,11 @@ while True:
     bcaddy = addy(privatekey)
     word = str(passphrase)
     try:
-        firstseen = requests.get("https://blockchain.info/q/addressfirstseen/" + bcaddy)
+        firstseen = requests.get("https://blockchain.info/q/addressfirstseen/" +
+                                 bcaddy)
         amount = requests.get("https://blockchain.info/rawaddr/" + bcaddy)
     except BaseException:
-        print ("ERROR!!")
+        print("ERROR!!")
 
     # print "-----------------------------------------------------"
     print "brainwallet string: " + str(word)
@@ -126,4 +124,4 @@ while True:
             print "Wallet amount: " + str(acc_bal)
         print "-----------------------------------------------------"
     except BaseException:
-        print ("ERROR!!")
+        print("ERROR!!")

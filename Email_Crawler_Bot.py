@@ -20,13 +20,12 @@ ctx = None
 # opener = urllib2.build_opener(urllib2.HTTPSHandler(context=None))
 # opener.addheaders = [('Mozilla/4.0 (compatible; MSIE 7.0; America Online Browser 1.1; Windows NT 5.1; (R1 1.5); .NET CLR 2.0.50727; InfoPath.1)')]
 opener = urllib2.build_opener()
-opener.addheaders = [
-    (
-        "Mozilla/4.0 (compatible; MSIE 7.0; America Online Browser 1.1; Windows NT 5.1; (R1 1.5); .NET CLR 2.0.50727; InfoPath.1)"
-    )
-]
+opener.addheaders = [(
+    "Mozilla/4.0 (compatible; MSIE 7.0; America Online Browser 1.1; Windows NT 5.1; (R1 1.5); .NET CLR 2.0.50727; InfoPath.1)"
+)]
 headers = {
-    "User-agent": "Mozilla/4.0 (compatible; MSIE 7.0; America Online Browser 1.1; Windows NT 5.1; (R1 1.5); .NET CLR 2.0.50727; InfoPath.1)"
+    "User-agent":
+        "Mozilla/4.0 (compatible; MSIE 7.0; America Online Browser 1.1; Windows NT 5.1; (R1 1.5); .NET CLR 2.0.50727; InfoPath.1)"
 }
 try:
     open("collections.txt", "r").close()
@@ -40,9 +39,9 @@ try:
     srx = raw_input("Enable searx lookup? (y/n): ")
     if srx == "y":
         dork = raw_input(
-            "type anything as keyword for the search engine(ex. halloween): "
-        )
-        pagedepth = int(input("enter amount of pages to look? (in integer number): "))
+            "type anything as keyword for the search engine(ex. halloween): ")
+        pagedepth = int(
+            input("enter amount of pages to look? (in integer number): "))
     prox = raw_input("Enable proxy? (y/n): ")
     if prox == "y":
         prox = "--proxy"
@@ -51,7 +50,9 @@ try:
     open("sources.txt", "a+").close()
     open("proxies.txt", "a+").close()
     proxies = open("proxies.txt", "r").read().split("\n")
+
     # Below function is created for extracting emails from specific url
+
 
     def getmails(link, proxy):
         # a'right. I gonna check if this link was already visited or not
@@ -65,10 +66,13 @@ try:
         try:
             randomip = proxies[randint(0, len(proxies) - 1)]
             if proxy == "--proxy":
-                dataOfLink = urllib.urlopen(link, proxies={"http": randomip}).read()
+                dataOfLink = urllib.urlopen(link, proxies={
+                    "http": randomip
+                }).read()
             else:
                 dataOfLink = urllib.urlopen(link).read()
-            mailsfound = re.findall('""?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)"?"', dataOfLink)
+            mailsfound = re.findall('""?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)"?"',
+                                    dataOfLink)
             for email in mailsfound:
                 email = email.replace("\n", "")
                 # below goes some banned keywords for email extraction
@@ -106,10 +110,13 @@ try:
         try:
             randomip = proxies[randint(0, len(proxies) - 1)]
             if prox == "--proxy":
-                getdata = urllib.urlopen(pburl, proxies={"http": randomip}).read()
+                getdata = urllib.urlopen(pburl, proxies={
+                    "http": randomip
+                }).read()
             else:
                 getdata = urllib.urlopen(pburl).read()
-            pasteurl = re.findall('class="i_p0" alt="" /><a href="(.*?)">', getdata)
+            pasteurl = re.findall('class="i_p0" alt="" /><a href="(.*?)">',
+                                  getdata)
             for link in pasteurl:
                 link = "https://pastebin.com/api_scrape_item.php?i=" + link
                 getmails(link, prox)
@@ -125,7 +132,9 @@ try:
         try:
             randomip = proxies[randint(0, len(proxies) - 1)]
             if prox == "--proxy":
-                getdata = urllib.urlopen(pburl, proxies={"http": randomip}).read()
+                getdata = urllib.urlopen(pburl, proxies={
+                    "http": randomip
+                }).read()
             else:
                 getdata = urllib.urlopen(pburl).read()
             pasteurl = re.findall('<td><a href="/view(.*?)">', getdata)
@@ -143,10 +152,13 @@ try:
         try:
             randomip = proxies[randint(0, len(proxies) - 1)]
             if prox == "--proxy":
-                getdata = urllib.urlopen(pburl, proxies={"http": randomip}).read()
+                getdata = urllib.urlopen(pburl, proxies={
+                    "http": randomip
+                }).read()
             else:
                 getdata = urllib.urlopen(pburl).read()
-            pasteurl = re.findall("<li><a href='//paste.debian.net(.*?)'>", getdata)
+            pasteurl = re.findall("<li><a href='//paste.debian.net(.*?)'>",
+                                  getdata)
             i = 1
             for link in pasteurl:
                 link = "http://paste.debian.net/plain" + link
@@ -180,26 +192,25 @@ try:
         p = 1
         m = pages  # max pages to crawl in the engine result
         while p <= m:
-            data = urllib.urlencode(
-                {
-                    "category_general": "1",
-                    "q": dork,
-                    "pageno": p,
-                    "time_range": "",
-                    "language": "all",
-                }
-            )
+            data = urllib.urlencode({
+                "category_general": "1",
+                "q": dork,
+                "pageno": p,
+                "time_range": "",
+                "language": "all",
+            })
             data = data.replace("+", "%20")
             try:
-                search = urllib2.Request("https://searx.laquadrature.net/", data)
+                search = urllib2.Request("https://searx.laquadrature.net/",
+                                         data)
                 req = opener.open(search)
                 source = req.read()
                 if "we didn't find any results" in source:
                     print "No Result in: " + dork
                     p = 100000000
                 sites = re.findall(
-                    'class="result_header"><a href="(.*?)" rel="noreferrer">', source
-                )
+                    'class="result_header"><a href="(.*?)" rel="noreferrer">',
+                    source)
                 sitelist.extend(sites)
                 if "</span> next page</button>" in source:
                     tp = p
@@ -223,8 +234,7 @@ try:
 
     # Main program interface starts from below
     print "Total emails in collections: ", len(
-        open("collections.txt", "r+").readlines()
-    )
+        open("collections.txt", "r+").readlines())
     while True:
         if pbin == "y":
             print "Looking in pastebin ..."
@@ -242,8 +252,7 @@ try:
             print "Attempting scan in Searx"
             searx(dork, pagedepth, prox)
         print "Total emails in collections now: ", len(
-            open("collections.txt", "r+").readlines()
-        )
+            open("collections.txt", "r+").readlines())
         time.sleep(3)
 except BaseException:
     print "USAGE: python bot.py"

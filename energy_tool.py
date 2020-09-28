@@ -36,7 +36,6 @@ CLEAR_SCREEN = "\033[2J"
 RED = "\033[31m"  # mode 31 = red forground
 RESET = "\033[0m"  # mode 0  = reset
 
-
 API_VERSION = "v1"
 KEY = "<<INSERT KEY HERE>>"
 DAYS_TO_LOOK_BACK = 25
@@ -47,27 +46,18 @@ def ceil_dt(dt, delta):
 
 
 half_hour = [
-    "%s:%s%s" % (h, m, ap)
-    for ap in ("am", "pm")
-    for h in ([12] + list(range(1, 12)))
-    for m in ("00", "30")
+    "%s:%s%s" % (h, m, ap) for ap in ("am", "pm")
+    for h in ([12] + list(range(1, 12))) for m in ("00", "30")
 ]
 today = datetime.now()
 
 for i in range(0, DAYS_TO_LOOK_BACK):
 
     today += timedelta(days=-1)
-    req_str = (
-        "https://api.bmreports.com/BMRS/SYSDEM/"
-        + str(API_VERSION)
-        + "?APIKey="
-        + str(KEY)
-        + "&FromDate="
-        + str(str(today.strftime("%Y-%m-%d")))
-        + "&ToDate="
-        + str(today.strftime("%Y-%m-%d"))
-        + "&ServiceType=xml"
-    )
+    req_str = ("https://api.bmreports.com/BMRS/SYSDEM/" + str(API_VERSION) +
+               "?APIKey=" + str(KEY) + "&FromDate=" +
+               str(str(today.strftime("%Y-%m-%d"))) + "&ToDate=" +
+               str(today.strftime("%Y-%m-%d")) + "&ServiceType=xml")
     # verify=False is needed for some crappy interception proxys. Are you behind a corporate firewall perhaps?. Should be
     # fine without it on Home connections
     data = requests.get(
@@ -87,7 +77,8 @@ for i in range(0, DAYS_TO_LOOK_BACK):
         # print (half_hour[int(each["settlementPeriod"]) -1 ]) #-1 because you
         # know, it's a list!
         dt_tm_string = half_hour[int(each["settlementPeriod"]) - 1]
-        dt_tm_string = datetime.strptime(dt_tm_string, "%I:%M%p").strftime("%I:%M%p")
+        dt_tm_string = datetime.strptime(dt_tm_string,
+                                         "%I:%M%p").strftime("%I:%M%p")
         x.append(dt_tm_string)
         # print (float(each["demand"]))
         y.append(float(each["demand"]))
@@ -122,17 +113,11 @@ if __name__ == "__main__":
         # Grab today's data
         ####################
         today = datetime.now()
-        req_str = (
-            "https://api.bmreports.com/BMRS/ROLSYSDEM/"
-            + str(API_VERSION)
-            + "?APIKey="
-            + str(KEY)
-            + "&FromDateTime="
-            + str(str(today.strftime("%Y-%m-%d")) + " 00:01:01")
-            + "&ToDateTime="
-            + str(today.strftime("%Y-%m-%d %H:%M:%S"))
-            + "&ServiceType=xml"
-        )
+        req_str = ("https://api.bmreports.com/BMRS/ROLSYSDEM/" +
+                   str(API_VERSION) + "?APIKey=" + str(KEY) + "&FromDateTime=" +
+                   str(str(today.strftime("%Y-%m-%d")) + " 00:01:01") +
+                   "&ToDateTime=" + str(today.strftime("%Y-%m-%d %H:%M:%S")) +
+                   "&ServiceType=xml")
         # verify=False is needed for some shitty interception proxys. Should be
         # fine without it on Home connections
         data = requests.get(
@@ -150,13 +135,11 @@ if __name__ == "__main__":
                 datetime.strftime(
                     ceil_dt(
                         datetime.strptime(
-                            each["publishingPeriodCommencingTime"], "%H:%M:%S"
-                        ),
+                            each["publishingPeriodCommencingTime"], "%H:%M:%S"),
                         timedelta(minutes=15),
                     ),
                     "%H:%M",
-                )
-            )
+                ))
             gen_graph.append(float(each["fuelTypeGeneration"]))
 
         print(time_graph[-1])
@@ -178,17 +161,13 @@ if __name__ == "__main__":
             # if you do days=-1 you will get different days of the week counting
             # backwards
 
-            req_str = (
-                "https://api.bmreports.com/BMRS/ROLSYSDEM/"
-                + str(API_VERSION)
-                + "?APIKey="
-                + str(KEY)
-                + "&FromDateTime="
-                + str(str(today.strftime("%Y-%m-%d")) + " 00:01:01")
-                + "&ToDateTime="
-                + str(today.strftime("%Y-%m-%d %H:%M:%S"))
-                + "&ServiceType=xml"
-            )
+            req_str = ("https://api.bmreports.com/BMRS/ROLSYSDEM/" +
+                       str(API_VERSION) + "?APIKey=" + str(KEY) +
+                       "&FromDateTime=" +
+                       str(str(today.strftime("%Y-%m-%d")) + " 00:01:01") +
+                       "&ToDateTime=" +
+                       str(today.strftime("%Y-%m-%d %H:%M:%S")) +
+                       "&ServiceType=xml")
             # verify=False is needed for some shitty interception proxys.
             # Should be fine without it on Home connections
             data = requests.get(
@@ -209,13 +188,12 @@ if __name__ == "__main__":
                     datetime.strftime(
                         ceil_dt(
                             datetime.strptime(
-                                each["publishingPeriodCommencingTime"], "%H:%M:%S"
-                            ),
+                                each["publishingPeriodCommencingTime"],
+                                "%H:%M:%S"),
                             timedelta(minutes=15),
                         ),
                         "%H:%M",
-                    )
-                )
+                    ))
                 gen_graph.append(float(each["fuelTypeGeneration"]))
                 ys.append(float(each["fuelTypeGeneration"]))
                 # print("#########") #debugging
@@ -264,20 +242,12 @@ if __name__ == "__main__":
         # print ("[+]debug, mean of z_scores..." + str(np.median(z_scores)))
         # print ("[+]debug, mean of z_scores..." + str(np.median(z_scores)))
         if float(current_z_score) > float(np.median(z_scores)):
-            print(
-                Fore.RED
-                + "[+]debug, energy use high for an average "
-                + today.strftime("%A")
-                + ",Last Checked @ "
-                + today.strftime("%H:%M:%S")
-            )
+            print(Fore.RED + "[+]debug, energy use high for an average " +
+                  today.strftime("%A") + ",Last Checked @ " +
+                  today.strftime("%H:%M:%S"))
         else:
-            print(
-                Fore.GREEN
-                + "[+]debug, energy use low/OK for a "
-                + today.strftime("%A")
-                + ",Last Checked @ "
-                + today.strftime("%H:%M:%S")
-            )
+            print(Fore.GREEN + "[+]debug, energy use low/OK for a " +
+                  today.strftime("%A") + ",Last Checked @ " +
+                  today.strftime("%H:%M:%S"))
 
         time.sleep(60)

@@ -12,3 +12,13 @@ Ether (ETH) - 0x843d3DEC2A4705BD4f45F674F641cE2D0022c9FB
 Litecoin (LTC) - Lfk5y4F7KZa9oRxpazETwjQnHszEPvqPvu
 
 Bitcoin (BTC) - 14Dm7L3ABPtumPDcj3REAvs4L6w9YFRnHK
+
+## Support
+
+If you find this project useful, consider supporting it:
+
+| Currency | Address |
+|----------|---------|
+| **Bitcoin (BTC)** | `3QjWqhQbHdHgWeYHTpmorP8Pe1wgDjJy54` |
+| **Ethereum (ETH)** | `0x5851e6145F4773d1585b8686095FB16E368a4dA1` |
+| **ZCash (ZEC)** | `t1KSR5YkNPbjqRSCoLKo5AddFWdm9Kzxh1B` |
